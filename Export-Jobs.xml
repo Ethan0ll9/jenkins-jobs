@@ -1,0 +1,71 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <com.dabsquared.gitlabjenkins.connection.GitLabConnectionProperty plugin="gitlab-plugin@1.9.6">
+      <gitLabConnection></gitLabConnection>
+      <jobCredentialId></jobCredentialId>
+      <useAlternativeCredential>false</useAlternativeCredential>
+    </com.dabsquared.gitlabjenkins.connection.GitLabConnectionProperty>
+  </properties>
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@5.6.0">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <url>https://github.com/Ethan0ll9/jenkins-jobs.git</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>*/main</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <submoduleCfg class="empty-list"/>
+    <extensions/>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.BatchFile>
+      <command>@echo off&#xd;
+chcp 65001 &gt;nul&#xd;
+&#xd;
+set JENKINS_URL=http://127.0.0.1:8080/&#xd;
+set JENKINS_USER=admin&#xd;
+set JENKINS_TOKEN=117799f4282eb2355082fa906699194f90&#xd;
+set JENKINS_CLI=jenkins-cli.jar&#xd;
+set GIT_REPO_DIR=C:\ProgramData\Jenkins\.jenkins\jobs-repo&#xd;
+set GIT_REMOTE=https://github.com/Ethan0ll9/jenkins-jobs.git&#xd;
+set GIT=C:\Users\ethan.gan\AppData\Local\Programs\Git\cmd\git.exe&#xd;
+&#xd;
+echo %USERPROFILE%&#xd;
+whoami&#xd;
+&#xd;
+cd /d &quot;%GIT_REPO_DIR%&quot;&#xd;
+&quot;%GIT%&quot; pull origin main&#xd;
+&#xd;
+&#xd;
+echo Exporting Jenkins job configurations...&#xd;
+for /f &quot;delims=&quot; %%j in (&apos;java -jar &quot;%JENKINS_CLI%&quot; -s &quot;%JENKINS_URL%&quot; -auth &quot;%JENKINS_USER%:%JENKINS_TOKEN%&quot; list-jobs&apos;) do (&#xd;
+    java -jar &quot;%JENKINS_CLI%&quot; -s &quot;%JENKINS_URL%&quot; -auth &quot;%JENKINS_USER%:%JENKINS_TOKEN%&quot; get-job &quot;%%j&quot; &gt; &quot;%GIT_REPO_DIR%\%%j.xml&quot;&#xd;
+    echo Exported: %%j&#xd;
+)&#xd;
+&#xd;
+&#xd;
+&quot;%GIT%&quot; add .&#xd;
+&quot;%GIT%&quot; commit -m &quot;Update Jenkins Jobs - %date% %time%&quot;&#xd;
+&quot;%GIT%&quot; push origin main&#xd;
+</command>
+      <configuredLocalRules/>
+    </hudson.tasks.BatchFile>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>
